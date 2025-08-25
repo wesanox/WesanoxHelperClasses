@@ -9,13 +9,13 @@ class HeaderImageHelper
     protected string $html;
 
     /**
-     * @param CroppableImage3 $image
-     * @param CroppableImage3|null $image_tablet
-     * @param CroppableImage3|null $image_mobile
+     * @param $image
+     * @param $image_tablet
+     * @param $image_mobile
      *
      * @return string
      */
-    public function getHeaderImage(CroppableImage3 $image, CroppableImage3 $image_tablet = null, CroppableImage3 $image_mobile = null): string
+    public function getHeaderImage($image, $image_tablet = null, $image_mobile = null): string
     {
         if( $image ) {
             $url_tablet = ($image_tablet) ? $image_tablet->url : $image->getCrop("tablet")->url;
