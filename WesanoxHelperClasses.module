@@ -2,6 +2,7 @@
 
 namespace ProcessWire;
 
+use ProcessWire\classes\ColumnHelper;
 use ProcessWire\classes\HeaderImageHelper;
 use ProcessWire\classes\HeadlineHelper;
 use ProcessWire\classes\LinkHelper;
@@ -30,6 +31,7 @@ class WesanoxHelperClasses extends WireData implements Module
     }
 
     /**
+     * @var ColumnHelper
      * @var HeaderImageHelper
      * @var HeadlineHelper
      * @var LinkHelper
@@ -37,6 +39,7 @@ class WesanoxHelperClasses extends WireData implements Module
      * @var ModuleInstaller
      * @var SeparatorHelper
      */
+    protected ColumnHelper $columnHelper;
     protected HeaderImageHelper $headerImageHelper;
     protected HeadlineHelper $headlineHelper;
     protected LinkHelper $linkHelper;
@@ -51,12 +54,23 @@ class WesanoxHelperClasses extends WireData implements Module
     {
         $this->classLoader->addNamespace('ProcessWire\\classes', __DIR__ . '/classes');
 
+        $this->columnHelper = new ColumnHelper();
         $this->headerImageHelper = new HeaderImageHelper();
         $this->headlineHelper = new HeadlineHelper();
         $this->linkHelper = new LinkHelper();
         $this->matrixHelper = new MatrixHelper();
         $this->moduleInstaller = new ModuleInstaller();
         $this->separatorHelper = new SeparatorHelper();
+    }
+
+    /**
+     * @param string $column_width
+     * @param string $offset
+     * @return string
+     */
+    public function getColumnHelper(string $column_width, string|null $offset = ''): string
+    {
+        return $this->columnHelper->getColumnHelper($column_width, $offset);
     }
 
     /**
