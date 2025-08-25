@@ -1,0 +1,138 @@
+<?php
+
+namespace ProcessWire;
+
+use ProcessWire\classes\HeaderImageHelper;
+use ProcessWire\classes\HeadlineHelper;
+use ProcessWire\classes\LinkHelper;
+use ProcessWire\classes\MatrixHelper;
+use ProcessWire\classes\ModuleInstaller;
+use ProcessWire\classes\SeparatorHelper;
+
+class WesanoxHelperClasses extends WireData implements Module
+{
+    public static function getModuleInfo()
+    {
+        return array(
+            'title' => 'wesanox Helper Classes',
+            'summary' => 'A Module to implement some helper classes for your ProcessWire project.',
+            'version' => '0.1.1',
+            'author' => 'Frittenfritze',
+            'href' => 'https://wesanox.de',
+            'icon' => 'cogs',
+            'singular' => true,
+            'autoload' => true,
+            'requires' => array(
+                'ProcessWire>=3.0.210',
+                'PHP>=8.0.0',
+            ),
+        );
+    }
+
+    /**
+     * @var HeaderImageHelper
+     * @var HeadlineHelper
+     * @var LinkHelper
+     * @var MatrixHelper
+     * @var ModuleInstaller
+     * @var SeparatorHelper
+     */
+    protected HeaderImageHelper $headerImageHelper;
+    protected HeadlineHelper $headlineHelper;
+    protected LinkHelper $linkHelper;
+    protected MatrixHelper $matrixHelper;
+    protected ModuleInstaller $moduleInstaller;
+    protected SeparatorHelper $separatorHelper;
+
+    /**
+     * Constructor
+     */
+    public function init()
+    {
+        $this->classLoader->addNamespace('ProcessWire\\classes', __DIR__ . '/classes');
+
+        $this->headerImageHelper = new HeaderImageHelper();
+        $this->headlineHelper = new HeadlineHelper();
+        $this->linkHelper = new LinkHelper();
+        $this->matrixHelper = new MatrixHelper();
+        $this->moduleInstaller = new ModuleInstaller();
+        $this->separatorHelper = new SeparatorHelper();
+    }
+
+    /**
+     * @param CroppableImage3 $image
+     * @param CroppableImage3|null $image_tablet
+     * @param CroppableImage3|null $image_mobile
+     *
+     * @return string
+     */
+    public function getHeaderImage(CroppableImage3 $image, CroppableImage3 $image_tablet = null, CroppableImage3 $image_mobile = null): string
+    {
+        return $this->headerImageHelper->getHeaderImage($image, $image_tablet, $image_mobile);
+    }
+
+    /**
+     * @param string $headline
+     * @param $tags
+     * @param string $style_class
+     * @param string $align
+     * @return string
+     */
+    public function getHeadline(string $headline, $tags, string $style_class, string $align = ''): string
+    {
+        return $this->headlineHelper->getHeadline($headline, $tags, $style_class, $align);
+    }
+
+    /**
+     * @param string $name
+     * @param RepeaterMatrixPageArray $matrix
+     * @param string $tags
+     * @param string $files_dir
+     * @param string $files_path
+     *
+     * @return void
+     */
+    public function renderMatrix(string $name, RepeaterMatrixPageArray $matrix, string $tags, string $files_dir = '', string $files_path = ''): void
+    {
+        $this->matrixHelper->renderMatrix($name, $matrix, $tags, $files_dir, $files_path);
+    }
+
+    /**
+     * @param $page
+     *
+     * @return string
+     */
+    public function renderLink($page): string
+    {
+        return $this->linkHelper->renderLink($page);
+    }
+
+    /**
+     * @param string $matrix
+     * @param string $class
+     * @param string $mobile
+     * @param string $tablet
+     * @param string $desktop
+     * @param bool $separator
+     *
+     * @return string
+     */
+    public function getSeparator(string $matrix, string $class, string  $mobile,string  $tablet,string  $desktop, bool $separator): string
+    {
+        return $this->separatorHelper->getSeparator($matrix, $class, $mobile, $tablet, $desktop, $separator);
+    }
+
+    /**
+     * @param string $module_name
+     * @param string $module_url
+     *
+     * @return void
+     *
+     * @throws WireException
+     * @throws WirePermissionException
+     */
+    public function downloadInstall(string $module_name, string $module_url): void
+    {
+        $this->moduleInstaller->downloadInstall($module_name, $module_url);
+    }
+}
