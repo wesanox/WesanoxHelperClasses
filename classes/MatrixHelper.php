@@ -29,13 +29,34 @@ class MatrixHelper extends WireData
         $files_path = $files_path !== '' ? $files_path : $default_path;
 
         foreach ($matrix as $item) {
-            if (!$this->renderMatrixItem($item, $tags, $files_dir, $files_path)) {
+            $file = $files_dir . $item->type . '/' . $item->type . '.php';
+
+            if (!$this->matrixFileExists($file)) {
                 $custom_dir  = $this->config->paths->templates . "fields/matrix_{$name}/";
                 $custom_path = $this->config->urls->templates . "fields/matrix_{$name}/";
 
-                $this->renderMatrixItem($item, $tags, $custom_dir, $custom_path);
+                if( $this->matrixFileExists($custom_dir . $item->type . '/' . $item->type . '.php')) {
+                    $this->renderMatrixItem($item, $tags, $custom_dir, $custom_path);
+                } else {
+                    echo sprintf(
+                        '<%1$s data-aos="fade-up" data-aos-duration="1000">%2$s</%1$s>',
+                        $tags,
+                        'file not found ' . $custom_dir . $item->type . '/' . $item->type . '.php',
+                    );
+                }
+            } else {
+                $this->renderMatrixItem($item, $tags, $files_dir, $files_path);
             }
         }
+    }
+
+    /**
+     * @param string $file
+     * @return bool
+     */
+    private function matrixFileExists(string $file): bool
+    {
+        return file_exists($file);
     }
 
     /**
@@ -43,9 +64,9 @@ class MatrixHelper extends WireData
      * @param string $tags
      * @param string $files_dir
      * @param string $files_path
-     * @return bool
+     * @return void
      */
-    private function renderMatrixItem($item, string $tags, string $files_dir, string $files_path): bool
+    private function renderMatrixItem($item, string $tags, string $files_dir, string $files_path): void
     {
         $this->getMatrixStyles($files_dir, $files_path, $item->type);
         $this->getMatrixScripts($files_dir, $files_path, $item->type);
@@ -59,10 +80,7 @@ class MatrixHelper extends WireData
                 $item->type,
                 $item->render('', $file)
             );
-            return true;
         }
-
-        return false;
     }
 
     /**
