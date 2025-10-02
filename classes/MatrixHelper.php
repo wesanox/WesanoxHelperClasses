@@ -7,6 +7,9 @@ use ProcessWire\WireData;
 
 class MatrixHelper extends WireData
 {
+    private array $custom_styles = [];
+    private array $custom_scripts = [];
+
     /**
      * Renders a matrix field with its styles, scripts, and corresponding HTML tags.
      *
@@ -25,93 +28,69 @@ class MatrixHelper extends WireData
         $default_dir  = $this->config->paths->root . "site/modules/WesanoxMatrix{$module_name}/src/fields/";
         $default_path = $this->config->urls->root  . "site/modules/WesanoxMatrix{$module_name}/src/fields/";
 
-        $files_dir  = $files_dir  !== '' ? $files_dir  : $default_dir;
-        $files_path = $files_path !== '' ? $files_path : $default_path;
+        $custom_dir  = $this->config->paths->templates . "fields/matrix_{$name}/";
+        $custom_path = $this->config->urls->templates . "fields/matrix_{$name}/";
 
         foreach ($matrix as $item) {
-            $file = $files_dir . $item->type . '/' . $item->type . '.php';
+            $type = (string) $item->type;
 
-            if (!$this->matrixFileExists($file)) {
-                $custom_dir  = $this->config->paths->templates . "fields/matrix_{$name}/";
-                $custom_path = $this->config->urls->templates . "fields/matrix_{$name}/";
+            $this->enqueueAssetsForType($type, $custom_dir, $custom_path);
+            $this->enqueueAssetsForType($type, $default_dir, $default_path);
 
-                if( $this->matrixFileExists($custom_dir . $item->type . '/' . $item->type . '.php')) {
-                    $this->renderMatrixItem($item, $tags, $custom_dir, $custom_path);
+            $matrix_file = $custom_dir . $type . '/' . $type . '.php';
+
+            if (!file_exists($matrix_file)) {
+                $fallback = $default_dir . $type . '/' . $type . '.php';
+
+                if (file_exists($fallback)) {
+                    $matrix_file = $fallback;
                 } else {
                     echo sprintf(
                         '<%1$s data-aos="fade-up" data-aos-duration="1000">%2$s</%1$s>',
                         $tags,
-                        'file not found ' . $custom_dir . $item->type . '/' . $item->type . '.php',
+                        'file not found ' . $custom_dir . $type . '/' . $type . '.php'
                     );
+                    continue;
                 }
-            } else {
-                $this->renderMatrixItem($item, $tags, $files_dir, $files_path);
             }
-        }
-    }
 
-    /**
-     * @param string $file
-     * @return bool
-     */
-    private function matrixFileExists(string $file): bool
-    {
-        return file_exists($file);
-    }
-
-    /**
-     * @param $item
-     * @param string $tags
-     * @param string $files_dir
-     * @param string $files_path
-     * @return void
-     */
-    private function renderMatrixItem($item, string $tags, string $files_dir, string $files_path): void
-    {
-        $this->getMatrixStyles($files_dir, $files_path, $item->type);
-        $this->getMatrixScripts($files_dir, $files_path, $item->type);
-
-        $file = $files_dir . $item->type . '/' . $item->type . '.php';
-
-        if (file_exists($file)) {
             echo sprintf(
                 '<%1$s class="%2$s" data-aos="fade-up" data-aos-duration="1000">%3$s</%1$s>',
                 $tags,
-                $item->type,
-                $item->render('', $file)
+                $type,
+                $item->render('', $matrix_file)
             );
         }
     }
 
     /**
-     * Add matrix styles to the configuration.
+     * Enqueues styles and scripts for a specific type by checking the file existence and avoiding duplicate inclusion.
      *
-     * @param string $files_dir The directory path where the style files are located.
-     * @param string $files_path The public path to the style files.
-     * @param string $type_name The specific type name used to locate the style file.
+     * @param string $type_name The name of the type for which assets are to be enqueued.
+     * @param string $base_dir The base directory path where the assets are located.
+     * @param string $base_path The public URL path to the assets.
      *
      * @return void
      */
-    private function getMatrixStyles(string $files_dir, string $files_path, string $type_name): void
+    private function enqueueAssetsForType(string $type_name, string $base_dir, string $base_path): void
     {
-        if (file_exists($files_dir . $type_name . '/' . $type_name . '.scss')) {
-            $this->config->styles->add($files_path . $type_name . '/' . $type_name . '.scss');
-        }
-    }
+        $dir  = rtrim($base_dir,  '/'). '/'. $type_name . '/';
+        $path = rtrim($base_path, '/'). '/'. $type_name . '/';
 
-    /**
-     * Add matrix scripts to the configuration if the specified script file exists.
-     *
-     * @param string $files_dir Directory path where the script files are located.
-     * @param string $files_path Base web-accessible path to the script files.
-     * @param string $type_name Name of the type used to locate the script file.
-     *
-     * @return void
-     */
-    private function getMatrixScripts(string $files_dir, string $files_path, string $type_name) : void
-    {
-        if (file_exists($files_dir . $type_name . '/' . $type_name . '.js')) {
-            $this->config->scripts->add($files_path . $type_name . '/' . $type_name . '.js');
+        $scss_file  = $dir  . $type_name . '.scss';
+        $scss_url = $path . $type_name . '.scss';
+
+        $js_file  = $dir  . $type_name . '.js';
+        $js_url = $path . $type_name . '.js';
+
+        if (file_exists($scss_file) && empty($this->custom_styles[$type_name])) {
+            $this->config->styles->add($scss_url);
+            $this->custom_styles[$type_name] = true;
+        }
+
+        if (file_exists($js_file) && empty($this->custom_scripts[$type_name])) {
+            $this->config->scripts->add($js_url);
+            $this->custom_scripts[$type_name] = true;
         }
     }
 }
