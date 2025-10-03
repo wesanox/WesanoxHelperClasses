@@ -122,18 +122,13 @@ class WesanoxHelperClasses extends WireData implements Module
     }
 
     /**
-     * @param string $matrix
-     * @param string $class
-     * @param string $mobile
-     * @param string $tablet
-     * @param string $desktop
-     * @param bool $separator
+     * @param $page
      *
      * @return string
      */
-    public function getSeparator(string $matrix, string $class, string  $mobile,string  $tablet,string  $desktop, bool $separator): string
+    public function getSeparator($page): string
     {
-        return $this->separatorHelper->getSeparator($matrix, $class, $mobile, $tablet, $desktop, $separator);
+        return $this->separatorHelper->getSeparator($page);
     }
 
     /**
