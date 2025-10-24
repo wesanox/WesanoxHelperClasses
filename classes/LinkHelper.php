@@ -10,7 +10,11 @@ class LinkHelper
      */
     public function renderLink($page) : string
     {
-        return '<a' . $this->getLinkStyle($page) . ' href="' . $this->getLink($page) . '" aria-label="' .$this->getLinkTitle($page) . '" title="' . $this->getLinkTitle($page) . '"' . $this->getLinkTarget($page) . '>' . $this->getLinkText($page) . '</a>';
+        if($this->getLink($page) != '') {
+            return '<a' . $this->getLinkStyle($page) . ' href="' . $this->getLink($page) . '" aria-label="' .$this->getLinkTitle($page) . '" title="' . $this->getLinkTitle($page) . '"' . $this->getLinkTarget($page) . '>' . $this->getLinkText($page) . '</a>';
+        } else {
+            return '';
+        }
     }
 
     /**
