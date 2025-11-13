@@ -9,6 +9,7 @@ use ProcessWire\classes\LinkHelper;
 use ProcessWire\classes\MatrixHelper;
 use ProcessWire\classes\ModuleInstaller;
 use ProcessWire\classes\SeparatorHelper;
+use ProcessWire\classes\SearchHelper;
 
 class WesanoxHelperClasses extends WireData implements Module
 {
@@ -46,6 +47,7 @@ class WesanoxHelperClasses extends WireData implements Module
     protected MatrixHelper $matrixHelper;
     protected ModuleInstaller $moduleInstaller;
     protected SeparatorHelper $separatorHelper;
+    protected SearchHelper $searchHelper;
 
     /**
      * Constructor
@@ -61,11 +63,13 @@ class WesanoxHelperClasses extends WireData implements Module
         $this->matrixHelper = new MatrixHelper();
         $this->moduleInstaller = new ModuleInstaller();
         $this->separatorHelper = new SeparatorHelper();
+        $this->searchHelper = new SearchHelper();
     }
 
     /**
      * @param string $column_width
-     * @param string $offset
+     * @param string|null $offset
+     *
      * @return string
      */
     public function getColumnHelper(string $column_width, string|null $offset = ''): string
@@ -90,6 +94,7 @@ class WesanoxHelperClasses extends WireData implements Module
      * @param $tags
      * @param string $style_class
      * @param string $align
+     *
      * @return string
      */
     public function getHeadline(string $headline, $tags, string $style_class, string $align = ''): string
@@ -135,13 +140,13 @@ class WesanoxHelperClasses extends WireData implements Module
      * @param string $module_name
      * @param string $module_url
      *
-     * @return void
+     * @return string
      *
      * @throws WireException
      * @throws WirePermissionException
      */
-    public function downloadInstall(string $module_name, string $module_url): void
+    public function downloadInstall(string $module_name, string $module_url): string
     {
-        $this->moduleInstaller->downloadInstall($module_name, $module_url);
+       return $this->moduleInstaller->downloadInstall($module_name, $module_url);
     }
 }
