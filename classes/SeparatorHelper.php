@@ -19,11 +19,11 @@ class SeparatorHelper
             case "1":
                 return $this->getSeparatorOffset($page, $css_class);
             case "2":
-                return '<div class="position-relative separator-image">' . $this->getSeparatorImage($image, " left start-0") . '</div>';
+                return '<div class="position-relative separator-image" data-aos="fade-right" data-aos-duration="1000">' . $this->getSeparatorImage($image, " left start-0") . '</div>';
             case "3":
                 return '<div class="position-relative separator-image">' . $this->getSeparatorImage($image, " center") . '</div>';
             case "4":
-                return '<div class="position-relative separator-image">' . $this->getSeparatorImage($image, " right end-0") . '</div>';
+                return '<div class="position-relative separator-image" data-aos="fade-left" data-aos-duration="1000">' . $this->getSeparatorImage($image, " right end-0") . '</div>';
             case "5":
                 return $this->getNextSectionArrow();
             default:
@@ -63,7 +63,7 @@ class SeparatorHelper
 
     private function getSeparatorImage($image, $css_class = '')
     {
-        return '<img class="position-absolute top-50' . $css_class . '" src="' . $image->url . '" alt="' . $image->description . '">';
+        return '<img class="position-absolute top-50' . $css_class . '" src="' . $image->url . '" alt="' . $image->description . '" loading="lazy">';
     }
 
     private function getNextSectionArrow(): string

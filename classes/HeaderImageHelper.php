@@ -27,7 +27,7 @@ class HeaderImageHelper
                     <source media="(min-width: 768px)" srcset="' . $url_tablet . '">
                     <source media="(min-width: 768px)" srcset="' . $url_mobile . '">
                   
-                    <img class="img-fluid" src="' . $image->getCrop("desktop")->url . '" alt="' . $image->description . '">
+                    <img class="img-fluid lazy" data-src="' . $image->getCrop("desktop")->url . '" alt="' . $image->description . '">
                 </picture>';
         } else {
             $this->html = '

@@ -18,7 +18,7 @@ class WesanoxHelperClasses extends WireData implements Module
         return array(
             'title' => 'wesanox Helper Classes',
             'summary' => 'A Module to implement some helper classes for your ProcessWire project.',
-            'version' => '0.1.2',
+            'version' => '0.1.3',
             'author' => 'Frittenfritze',
             'href' => 'https://wesanox.de',
             'icon' => 'cogs',

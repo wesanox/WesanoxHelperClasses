@@ -46,7 +46,7 @@ class MatrixHelper extends WireData
                     $matrix_file = $fallback;
                 } else {
                     echo sprintf(
-                        '<%1$s data-aos="fade-up" data-aos-duration="1000">%2$s</%1$s>',
+                        '<%1$s data-aos="fade-in" data-aos-duration="1000">%2$s</%1$s>',
                         $tags,
                         'file not found ' . $custom_dir . $type . '/' . $type . '.php'
                     );
@@ -55,7 +55,7 @@ class MatrixHelper extends WireData
             }
 
             echo sprintf(
-                '<%1$s class="%2$s" data-aos="fade-up" data-aos-duration="1000">%3$s</%1$s>',
+                '<%1$s class="%2$s" data-aos="fade-in" data-aos-duration="1000">%3$s</%1$s>',
                 $tags,
                 $type,
                 $item->render('', $matrix_file)
