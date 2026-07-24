@@ -1,0 +1,230 @@
+<?php
+
+namespace ProcessWire;
+
+use ProcessWire\classes\ColumnHelper;
+use ProcessWire\classes\HeaderImageHelper;
+use ProcessWire\classes\HeadlineHelper;
+use ProcessWire\classes\LinkHelper;
+use ProcessWire\classes\MatrixHelper;
+use ProcessWire\classes\ModuleInstaller;
+use ProcessWire\classes\SeparatorHelper;
+use ProcessWire\classes\SearchHelper;
+
+class WesanoxHelperClasses extends WireData implements Module
+{
+    public static function getModuleInfo()
+    {
+        return array(
+            'title' => 'wesanox Helper Classes',
+            'summary' => 'A Module to implement some helper classes for your ProcessWire project.',
+            'version' => '1.0.1',
+            'author' => 'Frittenfritze',
+            'href' => 'https://wesanox.de',
+            'icon' => 'cogs',
+            'singular' => true,
+            'autoload' => true,
+            'installs' => 'ProcessWesanoxSetupWizard',
+            'requires' => array(
+                'ProcessWire>=3.0.255',
+                'PHP>=8.0.0',
+            ),
+        );
+    }
+
+    /**
+     * @var ColumnHelper
+     * @var HeaderImageHelper
+     * @var HeadlineHelper
+     * @var LinkHelper
+     * @var MatrixHelper
+     * @var ModuleInstaller
+     * @var SeparatorHelper
+     */
+    protected ColumnHelper $columnHelper;
+    protected HeaderImageHelper $headerImageHelper;
+    protected HeadlineHelper $headlineHelper;
+    protected LinkHelper $linkHelper;
+    protected MatrixHelper $matrixHelper;
+    protected ModuleInstaller $moduleInstaller;
+    protected SeparatorHelper $separatorHelper;
+    protected SearchHelper $searchHelper;
+
+    /**
+     * Constructor
+     */
+    public function init()
+    {
+        $this->classLoader->addNamespace('ProcessWire\\classes', __DIR__ . '/classes');
+
+        $this->columnHelper = new ColumnHelper();
+        $this->headerImageHelper = new HeaderImageHelper();
+        $this->headlineHelper = new HeadlineHelper();
+        $this->linkHelper = new LinkHelper();
+        $this->matrixHelper = new MatrixHelper();
+        $this->moduleInstaller = new ModuleInstaller();
+        $this->separatorHelper = new SeparatorHelper();
+        $this->searchHelper = new SearchHelper();
+    }
+
+    /**
+     * @return void
+     */
+    public function ___install(): void
+    {
+        $this->installSetupWizard();
+    }
+
+    /**
+     * @param string $fromVersion
+     * @param string $toVersion
+     *
+     * @return void
+     */
+    public function ___upgrade($fromVersion, $toVersion): void
+    {
+        $this->installSetupWizard();
+    }
+
+    /**
+     * @return void
+     */
+    protected function installSetupWizard(): void
+    {
+        $this->wire()->modules->refresh();
+
+        if ($this->wire()->modules->isInstalled('ProcessWesanoxSetupWizard')) {
+            return;
+        }
+
+        if ($this->wire()->modules->isInstallable('ProcessWesanoxSetupWizard')) {
+            $this->wire()->modules->install('ProcessWesanoxSetupWizard');
+        }
+
+        $this->syncSetupWizardAdminPage();
+    }
+
+    /**
+     * @return void
+     */
+    protected function syncSetupWizardAdminPage(): void
+    {
+        $page = $this->wire()->pages->get('template=admin, include=all, process=ProcessWesanoxSetupWizard');
+
+        if (!$page->id) {
+            return;
+        }
+
+        $adminRoot = $this->wire()->pages->get($this->wire()->config->adminRootPageID);
+        $isCompleted = (bool) $this->wire()->modules->getConfig('ProcessWesanoxSetupWizard', 'setupWizardCompleted');
+        $changed = false;
+
+        if ($page->parent_id !== $adminRoot->id) {
+            $page->parent = $adminRoot;
+            $changed = true;
+        }
+
+        if ($page->title !== 'Wesanox Setup') {
+            $page->title = 'Wesanox Setup';
+            $changed = true;
+        }
+
+        if ($isCompleted) {
+            if (!$page->hasStatus(Page::statusHidden)) {
+                $page->addStatus(Page::statusHidden);
+                $changed = true;
+            }
+        } else if ($page->hasStatus(Page::statusHidden)) {
+            $page->removeStatus(Page::statusHidden);
+            $changed = true;
+        }
+
+        if ($changed) {
+            $this->wire()->pages->save($page);
+        }
+    }
+
+    /**
+     * @param string $column_width
+     * @param string|null $offset
+     *
+     * @return string
+     */
+    public function getColumnHelper(string $column_width, string|null $offset = ''): string
+    {
+        return $this->columnHelper->getColumnHelper($column_width, $offset);
+    }
+
+    /**
+     * @param $image
+     * @param $image_tablet
+     * @param $image_mobile
+     *
+     * @return string
+     */
+    public function getHeaderImage($image, $image_tablet = null, $image_mobile = null): string
+    {
+        return $this->headerImageHelper->getHeaderImage($image, $image_tablet, $image_mobile);
+    }
+
+    /**
+     * @param string $headline
+     * @param $tags
+     * @param string $style_class
+     * @param string $align
+     *
+     * @return string
+     */
+    public function getHeadline(string $headline, $tags, string $style_class, string $align = ''): string
+    {
+        return $this->headlineHelper->getHeadline($headline, $tags, $style_class, $align);
+    }
+
+    /**
+     * @param string $name
+     * @param RepeaterMatrixPageArray $matrix
+     * @param string $tags
+     * @param string $files_dir
+     * @param string $files_path
+     *
+     * @return void
+     */
+    public function renderMatrix(string $name, RepeaterMatrixPageArray $matrix, string $tags, string $files_dir = '', string $files_path = ''): void
+    {
+        $this->matrixHelper->renderMatrix($name, $matrix, $tags, $files_dir, $files_path);
+    }
+
+    /**
+     * @param $page
+     *
+     * @return string
+     */
+    public function renderLink($page): string
+    {
+        return $this->linkHelper->renderLink($page);
+    }
+
+    /**
+     * @param $page
+     *
+     * @return string
+     */
+    public function getSeparator($page): string
+    {
+        return $this->separatorHelper->getSeparator($page);
+    }
+
+    /**
+     * @param string $module_name
+     * @param string $module_url
+     *
+     * @return string
+     *
+     * @throws WireException
+     * @throws WirePermissionException
+     */
+    public function downloadInstall(string $module_name, string $module_url): string
+    {
+       return $this->moduleInstaller->downloadInstall($module_name, $module_url);
+    }
+}
